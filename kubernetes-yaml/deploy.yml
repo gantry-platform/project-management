@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project
+  namespace: gantry
+  labels:
+    app: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project
+  template:
+    metadata:
+      labels:
+        app: project
+    spec:
+      containers:
+        - name: project
+          image: harbor.gantry.ai/gantry/project-management:0.1
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          args: ["--spring.profiles.active=dev"]
+      imagePullSecrets:
+        - name: harbor-cred

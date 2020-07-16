@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: project
+  namespace: gantry
+spec:
+  rules:
+    - host: project.gantry.ai
+      http:
+        paths:
+          - backend:
+              serviceName: user
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - project.gantry.ai
+      secretName: project-ingress-tls
