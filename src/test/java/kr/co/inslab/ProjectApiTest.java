@@ -1,5 +1,7 @@
 package kr.co.inslab;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.inslab.api.ProjectsApiController;
 import kr.co.inslab.model.*;
@@ -53,6 +55,9 @@ public class ProjectApiTest {
     @Value("${keycloak.testUserPass}")
     private String TEST_USER_PASS;
 
+    @Value("${keycloak.testUserEmail}")
+    private String TEST_USER_EMAIL;
+
     public static String accessToken;
 
     public static String AUTHORIZATION = "Authorization";
@@ -63,6 +68,7 @@ public class ProjectApiTest {
 
     public static String groupId;
 
+    public static String userId;
 
     @Test
     @Order(0)
@@ -70,9 +76,27 @@ public class ProjectApiTest {
         assertThat(projectsApiController).isNotNull();
     }
 
-
     @Test
     @Order(1)
+    public void createUser() throws Exception {
+
+        NewUser newUser = new NewUser();
+        newUser.setEmail(TEST_USER_EMAIL);
+        newUser.setPassword(TEST_USER_PASS);
+        newUser.setUserName(TEST_USER_NAME);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String newUserStr = objectMapper.writeValueAsString(newUser);
+
+        this.mockMvc.perform(post("/test/users")
+                .content(newUserStr)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+    }
+
+
+    @Test
+    @Order(2)
     public void getToken() throws Exception {
 
         MvcResult mvcResult = this.mockMvc.perform(post("/token")
@@ -87,7 +111,8 @@ public class ProjectApiTest {
         Token token = objectMapper.readValue(content, Token.class);
 
         accessToken = token.getAccessToken();
-        log.debug(accessToken);
+        DecodedJWT decodedJWT = JWT.decode(accessToken);
+        userId = decodedJWT.getSubject();
 
     }
 
@@ -122,7 +147,7 @@ public class ProjectApiTest {
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     public void getProjects() throws Exception {
 
         MvcResult mvcResult = this.mockMvc.perform(get("/projects")
@@ -136,7 +161,7 @@ public class ProjectApiTest {
     }
 
     @Test
-    @Order(6)
+    @Order(5)
     public void getProjectInfoById() throws Exception {
 
         MvcResult mvcResult = this.mockMvc.perform(get("/projects/"+projectId)
@@ -155,7 +180,7 @@ public class ProjectApiTest {
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     public void updateProjectInfo() throws Exception {
 
         UpdateProject updateProject = new UpdateProject();
@@ -175,7 +200,7 @@ public class ProjectApiTest {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void archiveProject() throws Exception {
 
         this.mockMvc.perform(put("/projects/"+projectId+"/archive")
@@ -186,7 +211,7 @@ public class ProjectApiTest {
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     public void activeProject() throws Exception {
 
         this.mockMvc.perform(put("/projects/"+projectId+"/active")
@@ -198,7 +223,7 @@ public class ProjectApiTest {
 
 
     @Test
-    @Order(10)
+    @Order(9)
     public void getProjectGroupInfoById() throws Exception {
 
         MvcResult mvcResult = this.mockMvc.perform(get("/projects/"+projectId+"/groups")
@@ -256,10 +281,21 @@ public class ProjectApiTest {
     @Order(13)
     public void deleteProjectById() throws Exception {
 
-        MvcResult mvcResult = this.mockMvc.perform(delete("/projects/"+projectId)
+        this.mockMvc.perform(delete("/projects/"+projectId)
                 .header(AUTHORIZATION, BEARER + accessToken)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful()).andReturn();
     }
+    @Test
+    @Order(14)
+    public void deleteUser() throws Exception {
+
+        this.mockMvc.perform(delete("/test/users/"+userId)
+                .header(AUTHORIZATION, BEARER + accessToken)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+    }
+
 }
 

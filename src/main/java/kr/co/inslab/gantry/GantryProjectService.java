@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -245,11 +246,9 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             String userId = null;
             GroupRepresentation topGroup = this.getGroupById(projectId);
             GroupRepresentation subGroup = this.getGroupById(groupId);
-            try{
-                userId = super.createUser(email);
-            }catch (KeyCloakAdminException e){
-                throw new ProjectException(e.getMessage(),e.getHttpStatus());
-            }
+
+            userId = this.createUser(email);
+
             UserResource userResource = this.getUserResourceById(userId);
             this.joinGroup(userId,topGroup.getId());
             this.joinGroup(userId,subGroup.getId());
@@ -345,6 +344,45 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
         return false;
     }
 
+
+    public void removePendingUser(GroupRepresentation groupRepresentation,String email) {
+        Map<String, List<String>> projectAttrs = groupRepresentation.getAttributes();
+        List<String> pendingUsers = projectAttrs.get(CommonConstants.PENDING);
+
+        if(pendingUsers !=null && pendingUsers.contains(email)){
+            pendingUsers.remove(email);
+            projectAttrs.put(CommonConstants.PENDING,pendingUsers);
+            groupRepresentation.setAttributes(projectAttrs);
+            this.updateGroup(groupRepresentation.getId(),groupRepresentation);
+        }
+    }
+
+    private String createUser(String email) throws ProjectException {
+        String userId = null;
+        String [] splitEmail = email.split("@");
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setEmailVerified(false);
+        userRepresentation.setEnabled(true);
+        userRepresentation.setEmail(email);
+        userRepresentation.setUsername(splitEmail[0]);
+
+        List<String> actions = new ArrayList<>();
+        actions.add(CommonConstants.UPDATE_PROFILE);
+        actions.add(CommonConstants.UPDATE_PASSWORD);
+        actions.add(CommonConstants.VERIFY_EMAIL);
+        userRepresentation.setRequiredActions(actions);
+
+        Response response = super.createUser(userRepresentation);
+
+        try{
+            userId = super.getCreatedId(response,email);
+        } catch (KeyCloakAdminException e){
+            throw new ProjectException(e.getMessage(),e.getHttpStatus());
+        }
+
+        return userId;
+    }
+
     private Map<String,String> makeJoinInfo(String projectId,String groupId,String userId,String token){
         Map<String,String> joinInfo = new HashMap<>();
         joinInfo.put(CommonConstants.PROJECT_ID,projectId);
@@ -369,17 +407,5 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             this.updateGroup(groupRepresentation.getId(),groupRepresentation);
         }
 
-    }
-
-    public void removePendingUser(GroupRepresentation groupRepresentation,String email) {
-        Map<String, List<String>> projectAttrs = groupRepresentation.getAttributes();
-        List<String> pendingUsers = projectAttrs.get(CommonConstants.PENDING);
-
-        if(pendingUsers !=null && pendingUsers.contains(email)){
-            pendingUsers.remove(email);
-            projectAttrs.put(CommonConstants.PENDING,pendingUsers);
-            groupRepresentation.setAttributes(projectAttrs);
-            this.updateGroup(groupRepresentation.getId(),groupRepresentation);
-        }
     }
 }

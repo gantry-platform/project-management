@@ -145,28 +145,11 @@ public abstract class AbstractKeyCloak {
         return project;
     }
 
-    protected String createUser(String email) throws KeyCloakAdminException{
-
-        String [] splitEmail = email.split("@");
-        UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setEmailVerified(false);
-        userRepresentation.setEnabled(true);
-        userRepresentation.setEmail(email);
-        userRepresentation.setUsername(splitEmail[0]);
-
-        List<String> actions = new ArrayList<>();
-        actions.add(CommonConstants.UPDATE_PROFILE);
-        actions.add(CommonConstants.UPDATE_PASSWORD);
-        actions.add(CommonConstants.VERIFY_EMAIL);
-        userRepresentation.setRequiredActions(actions);
-
-        Response response = this.getRealm().users().create(userRepresentation);
-
-         return  this.getCreatedId(response, email);
-
+    protected Response createUser(UserRepresentation userRepresentation) {
+        return this.getRealm().users().create(userRepresentation);
     }
 
-    protected void checkUserById(String userId) throws KeyCloakAdminException, UserException {
+    protected void checkUserResource(String userId) throws KeyCloakAdminException{
         try{
             this.getUserResourceById(userId).toRepresentation();
         }catch (Exception e){
@@ -178,7 +161,6 @@ public abstract class AbstractKeyCloak {
             throw e;
         }
     }
-
 
     protected Project makeProjectMetaInfo(GroupRepresentation groupRepresentation) {
         Project project = null;
@@ -199,6 +181,8 @@ public abstract class AbstractKeyCloak {
         }
         return project;
     }
+
+
     private List<Group> addSubGroupsInfo(List<GroupRepresentation> subGroups) {
 
         List<Group> groups = new ArrayList<>();
@@ -245,7 +229,6 @@ public abstract class AbstractKeyCloak {
         }
         return pendingUsers;
     }
-
 
 
     private void setAdditionalProperties(GroupRepresentation groupRepresentation, Project project, List<PendingUser> pendingUsers){
