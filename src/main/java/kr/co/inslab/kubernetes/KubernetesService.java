@@ -4,10 +4,7 @@ import kr.co.inslab.kubernetes.model.NewNamespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,11 +24,10 @@ public class KubernetesService implements Kubernetes{
     }
 
     @Override
-    public void createNamespace(String name) {
+    public ResponseEntity<Void> createNamespace(String name) throws KubernetesException {
         //set header
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_FORM_URLENCODED));
 
         //set body
         NewNamespace newNamespace = new NewNamespace();
@@ -39,7 +35,24 @@ public class KubernetesService implements Kubernetes{
 
         //send request
         HttpEntity<NewNamespace> httpEntity = new HttpEntity<>(newNamespace,httpHeaders);
-        ResponseEntity<Void> res = this.restTemplate.postForEntity(K8S_API_ENDPOINT+"/namespaces",httpEntity,Void.class);
+        ResponseEntity<Void> responseEntity =
+                this.restTemplate.postForEntity(K8S_API_ENDPOINT+"/namespaces",httpEntity,Void.class);
 
+        if(!responseEntity.getStatusCode().is2xxSuccessful()){
+            throw new KubernetesException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
+        }
+
+        return responseEntity;
+    }
+
+    @Override
+    public ResponseEntity<Void>  deleteNamespace(String name) throws KubernetesException {
+        ResponseEntity<Void> responseEntity =
+                this.restTemplate.exchange(K8S_API_ENDPOINT+"/namespaces/{name}", HttpMethod.DELETE,null,Void.class,name);
+        if(!responseEntity.getStatusCode().is2xxSuccessful()){
+            throw new KubernetesException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
+        }
+
+        return responseEntity;
     }
 }

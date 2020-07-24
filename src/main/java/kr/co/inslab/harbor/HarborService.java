@@ -1,6 +1,5 @@
 package kr.co.inslab.harbor;
 
-import com.google.common.reflect.TypeToken;
 import kr.co.inslab.auth.OAuthToken;
 import kr.co.inslab.harbor.model.HarborProject;
 import kr.co.inslab.harbor.model.HarborProjectMetadata;
@@ -48,7 +47,7 @@ public class HarborService implements Harbor {
     }
 
     @Override
-    public void createProject(String projectName) {
+    public ResponseEntity<Void> createProject(String projectName) throws HarborException {
 
         //get idToken
         String idToken = this.getIdToken();
@@ -65,17 +64,14 @@ public class HarborService implements Harbor {
         //send request
         HttpEntity<NewHarborProject> httpEntity = new HttpEntity<>(newHarborProject,httpHeaders);
         ResponseEntity<Void> responseEntity = this.restTemplate.postForEntity(HARBOR_API_ENDPOINT+"/projects",httpEntity,Void.class);
-
-        List<String> tokens =  responseEntity.getHeaders().get("XSRF-TOKEN");
-        if(tokens !=null){
-            for(String token: tokens){
-                log.debug("token:"+token);
-            }
+        if(!responseEntity.getStatusCode().is2xxSuccessful()){
+            throw new HarborException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
+        return responseEntity;
     }
 
     @Override
-    public List<HarborProject> getProjectByName(String projectName) {
+    public List<HarborProject> getProjectByName(String projectName) throws HarborException {
         //get idToken
         String idToken = this.getIdToken();
         log.debug("idToken:"+idToken);
@@ -89,19 +85,15 @@ public class HarborService implements Harbor {
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         ResponseEntity<List<HarborProject>> responseEntity =
                 this.restTemplate.exchange(HARBOR_API_ENDPOINT+"/projects?name={name}",HttpMethod.GET,httpEntity, new ParameterizedTypeReference<List<HarborProject>>() {},projectName);
-
-        List<HarborProject> harborProjects = responseEntity.getBody();
-        if(harborProjects != null){
-            for(HarborProject harborProject : harborProjects){
-                log.debug(harborProject.getName());
-            }
+        if(!responseEntity.getStatusCode().is2xxSuccessful()){
+            throw new HarborException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
 
-        return harborProjects;
+        return responseEntity.getBody();
     }
 
     @Override
-    public void deleteProject(int projectId) {
+    public ResponseEntity<Void> deleteProject(int projectId) throws HarborException {
         String idToken = this.getIdToken();
         //set header
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -109,7 +101,11 @@ public class HarborService implements Harbor {
         httpHeaders.add(HttpHeaders.AUTHORIZATION, CommonConstants.BEARER_ + idToken);
 
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
-        this.restTemplate.exchange(HARBOR_API_ENDPOINT+"/projects/{projectId}",HttpMethod.DELETE,httpEntity, new ParameterizedTypeReference<List<HarborProject>>() {},projectId);
+        ResponseEntity<Void> responseEntity = this.restTemplate.exchange(HARBOR_API_ENDPOINT+"/projects/{projectId}",HttpMethod.DELETE,httpEntity,Void.class,projectId);
+        if(!responseEntity.getStatusCode().is2xxSuccessful()){
+            throw new HarborException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
+        }
+        return responseEntity;
     }
 
     private NewHarborProject getDefaultHarborProject(String projectName){

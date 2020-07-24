@@ -2,7 +2,9 @@ package kr.co.inslab.utils;
 
 
 import kr.co.inslab.api.ApiException;
+import kr.co.inslab.harbor.HarborException;
 import kr.co.inslab.keycloak.KeyCloakAdminException;
+import kr.co.inslab.kubernetes.KubernetesException;
 import kr.co.inslab.model.Error;
 import org.keycloak.common.VerificationException;
 import org.slf4j.Logger;
@@ -47,6 +49,28 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
         Error err = new Error();
         HttpStatus status = ((KeyCloakAdminException) ex).getHttpStatus();
         String message = ((KeyCloakAdminException) ex).getMessage();
+        err.setCode(status.toString());
+        err.setMessage(message);
+        return new ResponseEntity<>(err,status);
+    }
+
+    @ExceptionHandler(KubernetesException.class)
+    public ResponseEntity<Error> kubernetesExceptionHandler(Exception ex,HttpServletResponse response) throws Exception{
+        ex.printStackTrace();
+        Error err = new Error();
+        HttpStatus status = ((KubernetesException) ex).getHttpStatus();
+        String message = ((KubernetesException) ex).getMessage();
+        err.setCode(status.toString());
+        err.setMessage(message);
+        return new ResponseEntity<>(err,status);
+    }
+
+    @ExceptionHandler(HarborException.class)
+    public ResponseEntity<Error> harborExceptionHandler(Exception ex,HttpServletResponse response) throws Exception{
+        ex.printStackTrace();
+        Error err = new Error();
+        HttpStatus status = ((HarborException) ex).getHttpStatus();
+        String message = ((HarborException) ex).getMessage();
         err.setCode(status.toString());
         err.setMessage(message);
         return new ResponseEntity<>(err,status);
