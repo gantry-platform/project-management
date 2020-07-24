@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class GantryProjectService extends AbstractKeyCloak implements GantryProject {
 
-    private final Logger logger = LoggerFactory.getLogger(GantryProjectService.class);
+    private final Logger log = LoggerFactory.getLogger(GantryProjectService.class);
 
     private final RedisTemplate<String,Object> redisTemplate;
 
@@ -216,7 +216,7 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
                 redisTemplate.delete(email);
             }catch (Exception ex){
                 ex.printStackTrace();
-                logger.warn("Redis Key 삭제 중 Error");
+                log.warn("Redis Key 삭제 중 Error");
             }
             if(!(userRepresentations.get(0).isEmailVerified())){
                 this.removeUser(userRepresentations.get(0).getId());
@@ -224,9 +224,9 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             //Multiple Users
         }else{
             for(UserRepresentation userRepresentation: userRepresentations){
-                logger.debug(userRepresentation.getEmail());
+                log.debug(userRepresentation.getEmail());
             }
-            logger.error("Multiple Users Exception");
+            log.error("Multiple Users Exception");
             throw new ProjectException("Multiple Users Exception",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -272,9 +272,9 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             //Multiple Users
         }else{
             for(UserRepresentation userRepresentation: userRepresentations){
-                logger.debug(userRepresentation.getEmail());
+                log.debug(userRepresentation.getEmail());
             }
-            logger.error("Multiple Users Exception");
+            log.error("Multiple Users Exception");
             throw new ProjectException("Multiple Users Exception",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

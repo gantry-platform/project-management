@@ -1,9 +1,6 @@
 package kr.co.inslab.utils;
 
 
-import org.springframework.beans.factory.annotation.Value;
-
-
 public class CommonConstants {
     public final static String UPDATE_PROFILE = "UPDATE_PROFILE";
     public final static String VERIFY_EMAIL = "VERIFY_EMAIL";
@@ -26,4 +23,10 @@ public class CommonConstants {
     public static final String PASSWORD = "password";
     public static final String USERNAME = "username";
     public static final String GRANT_TYPE = "grant_type";
+    public static final String BEARER_= "Bearer ";
+    public static final String ID_TOKEN="id_token";
+    public static final String ADMIN_TOKEN="adminToken";
+    public static final String SCOPE="scope";
+    public static final String OPENID="openid";
+    public static final String NAME="name";
 }

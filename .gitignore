@@ -4,8 +4,10 @@
 target/
 bin/
 .codegen/
+codegen/
 .classpath
 .project
 .swagger-codegen-ignore
 *.iml
 .factorypath
+

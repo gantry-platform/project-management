@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ElapsedTimeAspect {
-    private final Logger logger = LoggerFactory.getLogger(ElapsedTimeAspect.class);
+    private final Logger log = LoggerFactory.getLogger(ElapsedTimeAspect.class);
 
     @Around("execution(* kr.co.inslab..*.*(..))")
-    public Object printElapsedTime(final ProceedingJoinPoint joinPoint) throws Throwable{
+    public Object printElapsedTime(final ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
-        String typeName = joinPoint.getSignature().getDeclaringTypeName();
-        String name = joinPoint.getSignature().getName();
 
+        log.debug("[ElapsedTimeCheck] [getSignature().getDeclaringTypeName()] => [" + joinPoint.getSignature().getDeclaringTypeName()
+                + "]");
+        log.debug(
+                "[ElapsedTimeCheck] [getSignature().getName()] => [" + joinPoint.getSignature().getName() + "() ]");
         Object obj = joinPoint.proceed();
 
         long elapsedTime = System.currentTimeMillis() - start;
-        logger.debug("Elapsed Time: "+elapsedTime+" millis"+", Class:"+typeName+", Method:"+name);
-
+        log.debug("[ElapsedTimeCheck]  [" + joinPoint.getSignature().getName() + "()][Elapsed Time] => "
+                + elapsedTime + " milliseconds.");
 
         return obj;
     }
-
 }
-

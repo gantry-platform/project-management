@@ -1,8 +1,7 @@
 package kr.co.inslab.keycloak;
 
-import kr.co.inslab.utils.CommonConstants;
-import kr.co.inslab.gantry.UserException;
 import kr.co.inslab.model.*;
+import kr.co.inslab.utils.CommonConstants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RoleResource;

@@ -622,3 +622,859 @@ components:
         message:
           type: string
 
+    HarborProject:
+      type: object
+      properties:
+        project_id:
+          type: integer
+          format: int32
+          description: Project ID
+        owner_id:
+          openapi: "3.0.0"
+          info:
+            version: 0.1.0
+            title: Project Mangement
+            description: API Gateway를 사용전 까지는 HeaderFilter를 추가해서 Token 유효성확인 Json naming convention은 (_)를 사용한다.e.g.) user_name,project_name
+              Project는 Header로 전달되는 access_token or apigateway로 부터 전달되는 gantry 사용자의 아이디
+              정보를 가지고 모든 처리를 한다.
+          servers:
+            - url: http://127.0.0.1:8080
+              description: 로컬서버
+            - url: https://project.dev.gantry.ai
+              description: 개발서버
+            - url: https://project.gantry.ai
+              description: 운영서버
+
+          tags:
+            - name: projects
+              description: grantry project 관리
+          paths:
+            /projects:
+              get:
+                summary: project 정보 조회
+                tags:
+                  - projects
+                responses:
+                  '200':
+                    description: Success
+                    content:
+                      application/json:
+                        schema:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/Project"
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+              post:
+                summary: 신규 프로젝트 생성
+                tags:
+                  - projects
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/NewProject'
+                responses:
+                  '201':
+                    description: Create
+                    content:
+                      application/json:
+                        schema:
+                          $ref: '#/components/schemas/Project'
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '409':
+                    description: Conflict
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}:
+              get:
+                summary: 프로젝트 정보 조회
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                    content:
+                      application/json:
+                        schema:
+                          $ref: '#/components/schemas/Project'
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+              patch:
+                summary: 프로젝트 업데이트 (owner and description)
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/UpdateProject'
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+              delete:
+                summary: 프로젝트 삭제
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}/archive:
+              put:
+                summary: 프로젝트 보관
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}/active:
+              put:
+                summary: 프로젝트 활성화
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}/groups:
+              get:
+                summary: 프로젝트의 전체 그룹정도(dev,ops,admin) 조회
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                    content:
+                      application/json:
+                        schema:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Group'
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}/groups/{group_id}/invitation:
+              put:
+                summary: 특정 그룹으로 맴버초대
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                  - name: group_id
+                    in: path
+                    required: true
+                    description: group_id
+                    schema:
+                      type: string
+                  - name: email
+                    in: query
+                    required: true
+                    description: email
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '409':
+                    description: Conflict
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}/groups/invitation:
+              delete:
+                summary: 특정 맴버를 invitation 리스트에서 삭제한다.
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                  - name: email
+                    in: query
+                    required: true
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+
+            /projects/{project_id}/members/{member_id}:
+              delete:
+                summary: 특정 맴버를 프로젝트에서 삭제한다.(그룹이 아니라 프로젝트임)
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                  - name: member_id
+                    in: path
+                    required: true
+                    description: user id == member_id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+            /projects/{project_id}/groups/{group_id}/members:
+              get:
+                summary: 특정 프로젝트의 전체 맴버를 조회한다.
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                  - name: group_id
+                    in: path
+                    required: true
+                    description: group id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                    content:
+                      application/json:
+                        schema:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Member'
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '409':
+                    description: Conflict
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+              patch:
+                summary: 맴버의 그룹정보를 변경한다.(e.g.) admin to ops)
+                tags:
+                  - projects
+                parameters:
+                  - name: project_id
+                    in: path
+                    required: true
+                    description: project id
+                    schema:
+                      type: string
+                  - name: group_id
+                    in: path
+                    required: true
+                    description: group id
+                    schema:
+                      type: string
+                  - name: member_id
+                    in: query
+                    required: true
+                    description: member id
+                    schema:
+                      type: string
+                responses:
+                  '200':
+                    description: Success
+                  '400':
+                    description: Bad Request
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '401':
+                    description: Unauthorized
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+                  '404':
+                    description: Not Found
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Error"
+
+          components:
+            schemas:
+              User:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  email:
+                    type: string
+                  user_name:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  email_verified:
+                    type: boolean
+                  projects:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Project"
+              Project:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  owner:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - archive
+                      - active
+                  groups:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Group"
+                  pending_users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PendingUser"
+
+              PendingUser:
+                type: object
+                properties:
+                  email:
+                    type: string
+              Group:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  members:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Member"
+              Member:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  user_name:
+                    type: string
+                  email:
+                    type: string
+                  email_verified:
+                    type: boolean
+              NewProject:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+              UpdateProject:
+                type: object
+                properties:
+                  owner:
+                    type: string
+                  description:
+                    type: string
+              Error:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+
+              HarborProject:
+                type: object
+                properties:
+                  project_id:
+                    type: integer
+                    format: int32
+                    description: Project ID
+                  owner_id:
+                    type: integer
+                    format: int32
+                    description: The owner ID of the project always means the creator of the project.
+                  name:
+                    type: string
+                    description: The name of the project.
+                  creation_time:
+                    type: string
+                    description: The creation time of the project.
+                  update_time:
+                    type: string
+                    description: The update time of the project.
+                  deleted:
+                    type: boolean
+                    description: A deletion mark of the project.
+                  owner_name:
+                    type: string
+                    description: The owner name of the project.
+                  togglable:
+                    type: boolean
+                    description: Correspond to the UI about whether the project's publicity is  updatable (for UI)
+                  current_user_role_id:
+                    type: integer
+                    description: The role ID of the current user who triggered the API (for UI)
+                  repo_count:
+                    type: integer
+                    description: The number of the repositories under this project.
+                  chart_count:
+                    type: integer
+                    description: The total number of charts under this project.
+                  metadata:
+                    description: The metadata of the project.
+                    $ref: "#/components/schemas/HarborProjectMetadata"
+                  cve_whitelist:
+                    description: The CVE whitelist of this project.
+                    $ref: "#/components/schemas/CVEWhitelist"
+
+              NewHarborProject:
+                type: object
+                properties:
+                  project_name:
+                    type: string
+                    description: The name of the project.
+                  metadata:
+                    description: The metadata of the project.
+                    $ref: "#/components/schemas/HarborProjectMetadata"
+                  cve_whitelist:
+                    description: The CVE whitelist of the project.
+                    $ref: "#/components/schemas/CVEWhitelist"
+                  count_limit:
+                    type: integer
+                    format: int64
+                    description: The count quota of the project.
+                  storage_limit:
+                    type: integer
+                    format: int64
+                    description: The storage quota of the project.
+
+              HarborProjectMetadata:
+                type: object
+                properties:
+                  public:
+                    type: string
+                    description: 'The public status of the project. The valid values are "true", "false".'
+                  enable_content_trust:
+                    type: string
+                    description: 'Whether content trust is enabled or not. If it is enabled, user can''t pull unsigned images from this project. The valid values are "true", "false".'
+                  prevent_vul:
+                    type: string
+                    description: 'Whether prevent the vulnerable images from running. The valid values are "true", "false".'
+                  severity:
+                    type: string
+                    description: 'If the vulnerability is high than severity defined here, the images can''t be pulled. The valid values are "negligible", "low", "medium", "high", "critical".'
+                  auto_scan:
+                    type: string
+                    description: 'Whether scan images automatically when pushing. The valid values are "true", "false".'
+                  reuse_sys_cve_whitelist:
+                    type: string
+                    description: 'Whether this project reuse the system level CVE whitelist as the whitelist of its own.  The valid values are "true", "false".
+                           If it is set to "true" the actual whitelist associate with this project, if any, will be ignored.'
+
+              CVEWhitelist:
+                type: object
+                description: The CVE Whitelist for system or project
+                properties:
+                  id:
+                    type: integer
+                    description: ID of the whitelist
+                  project_id:
+                    type: integer
+                    description: ID of the project which the whitelist belongs to.  For system level whitelist this attribute is zero.
+                  expires_at:
+                    type: integer
+                    description: the time for expiration of the whitelist, in the form of seconds since epoch.  This is an optional attribute, if it's not set the CVE whitelist does not expire.
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CVEWhitelistItem"
+
+              CVEWhitelistItem:
+                type: object
+                description: The item in CVE whitelist
+                properties:
+                  cve_id:
+                    type: string
+                    description: The ID of the CVE, such as "CVE-2019-10164"
+          type: integer
+          format: int32
+          description: The owner ID of the project always means the creator of the project.
+        name:
+          type: string
+          description: The name of the project.
+        creation_time:
+          type: string
+          description: The creation time of the project.
+        update_time:
+          type: string
+          description: The update time of the project.
+        deleted:
+          type: boolean
+          description: A deletion mark of the project.
+        owner_name:
+          type: string
+          description: The owner name of the project.
+        togglable:
+          type: boolean
+          description: Correspond to the UI about whether the project's publicity is  updatable (for UI)
+        current_user_role_id:
+          type: integer
+          description: The role ID of the current user who triggered the API (for UI)
+        repo_count:
+          type: integer
+          description: The number of the repositories under this project.
+        chart_count:
+          type: integer
+          description: The total number of charts under this project.
+        metadata:
+          description: The metadata of the project.
+          $ref: "#/components/schemas/HarborProjectMetadata"
+        cve_whitelist:
+          description: The CVE whitelist of this project.
+          $ref: "#/components/schemas/CVEWhitelist"
+
+    NewHarborProject:
+      type: object
+      properties:
+        project_name:
+          type: string
+          description: The name of the project.
+        metadata:
+          description: The metadata of the project.
+          $ref: "#/components/schemas/HarborProjectMetadata"
+        cve_whitelist:
+          description: The CVE whitelist of the project.
+          $ref: "#/components/schemas/CVEWhitelist"
+        count_limit:
+          type: integer
+          format: int64
+          description: The count quota of the project.
+        storage_limit:
+          type: integer
+          format: int64
+          description: The storage quota of the project.
+
+    HarborProjectMetadata:
+      type: object
+      properties:
+        public:
+          type: string
+          description: 'The public status of the project. The valid values are "true", "false".'
+        enable_content_trust:
+          type: string
+          description: 'Whether content trust is enabled or not. If it is enabled, user can''t pull unsigned images from this project. The valid values are "true", "false".'
+        prevent_vul:
+          type: string
+          description: 'Whether prevent the vulnerable images from running. The valid values are "true", "false".'
+        severity:
+          type: string
+          description: 'If the vulnerability is high than severity defined here, the images can''t be pulled. The valid values are "negligible", "low", "medium", "high", "critical".'
+        auto_scan:
+          type: string
+          description: 'Whether scan images automatically when pushing. The valid values are "true", "false".'
+        reuse_sys_cve_whitelist:
+          type: string
+          description: 'Whether this project reuse the system level CVE whitelist as the whitelist of its own.  The valid values are "true", "false".
+          If it is set to "true" the actual whitelist associate with this project, if any, will be ignored.'
+
+    CVEWhitelist:
+      type: object
+      description: The CVE Whitelist for system or project
+      properties:
+        id:
+          type: integer
+          description: ID of the whitelist
+        project_id:
+          type: integer
+          description: ID of the project which the whitelist belongs to.  For system level whitelist this attribute is zero.
+        expires_at:
+          type: integer
+          description: the time for expiration of the whitelist, in the form of seconds since epoch.  This is an optional attribute, if it's not set the CVE whitelist does not expire.
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CVEWhitelistItem"
+
+    CVEWhitelistItem:
+      type: object
+      description: The item in CVE whitelist
+      properties:
+        cve_id:
+          type: string
+          description: The ID of the CVE, such as "CVE-2019-10164"
+    NewNamespace:
+      type: object
+      properties:
+        name:
+          type: string

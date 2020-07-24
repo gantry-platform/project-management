@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class GantryUserService extends AbstractKeyCloak implements GantryUser {
 
-    private final Logger logger = LoggerFactory.getLogger(GantryUserService.class);
+    private final Logger log = LoggerFactory.getLogger(GantryUserService.class);
 
     public GantryUserService(Keycloak keycloakAdmin) {
         super(keycloakAdmin);

@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-
 public class ProjectApiTest {
 
     private static final Logger log = LoggerFactory.getLogger(ProjectApiTest.class);
@@ -41,13 +40,6 @@ public class ProjectApiTest {
 
     @Autowired
     private ProjectsApiController projectsApiController;
-
-    @Value("${keycloak.testClientId}")
-    private String TEST_CLIENT_ID;
-
-    @Value("${keycloak.testClientSecret}")
-    private String TEST_CLIENT_SECRET;
-
 
     @Value("${keycloak.testUserName}")
     private String TEST_USER_NAME;
@@ -79,7 +71,6 @@ public class ProjectApiTest {
     @Test
     @Order(1)
     public void createUser() throws Exception {
-
         NewUser newUser = new NewUser();
         newUser.setEmail(TEST_USER_EMAIL);
         newUser.setPassword(TEST_USER_PASS);

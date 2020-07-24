@@ -1,0 +1,47 @@
+{
+    "apiVersion": "v1",
+    "kind": "Namespace",
+    "metadata": {
+        "creationTimestamp": "2020-07-17T06:08:57Z",
+        "deletionTimestamp": "2020-07-17T06:28:58Z",
+        "labels": {
+            "control-plane": "kubeflow",
+            "katib-metricscollector-injection": "enabled"
+        },
+        "name": "kubeflow",
+        "resourceVersion": "45393046",
+        "selfLink": "/api/v1/namespaces/kubeflow",
+        "uid": "239c49de-5ef4-41bb-9342-6fa13419f045"
+    },
+    "spec": {
+        "finalizers": [
+            "kubernetes"
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastTransitionTime": "2020-07-17T06:29:03Z",
+                "message": "Discovery failed for some groups, 1 failing: unable to retrieve the complete list of server APIs: webhook.cert-manager.io/v1beta1: the server is currently unable to handle the request",
+                "reason": "DiscoveryFailed",
+                "status": "True",
+                "type": "NamespaceDeletionDiscoveryFailure"
+            },
+            {
+                "lastTransitionTime": "2020-07-17T06:29:04Z",
+                "message": "All legacy kube types successfully parsed",
+                "reason": "ParsedGroupVersions",
+                "status": "False",
+                "type": "NamespaceDeletionGroupVersionParsingFailure"
+            },
+            {
+                "lastTransitionTime": "2020-07-17T06:29:04Z",
+                "message": "All content successfully deleted",
+                "reason": "ContentDeleted",
+                "status": "False",
+                "type": "NamespaceDeletionContentFailure"
+            }
+        ],
+        "phase": "Terminating"
+    }
+}
