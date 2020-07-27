@@ -1,6 +1,7 @@
 package kr.co.inslab.utils;
 
 
+//TODO: 종류별 분류(enum)
 public class CommonConstants {
     public final static String UPDATE_PROFILE = "UPDATE_PROFILE";
     public final static String VERIFY_EMAIL = "VERIFY_EMAIL";
@@ -28,5 +29,12 @@ public class CommonConstants {
     public static final String ADMIN_TOKEN="adminToken";
     public static final String SCOPE="scope";
     public static final String OPENID="openid";
-    public static final String NAME="name";
+    public static final String CREATE="create";
+    public static final String DELETE="delete";
+    public static final String CREATE_IN_PROGRESS="create_in_progress";
+    public static final String DELETE_IN_PROGRESS="delete_in_progress";
+    public static final String CREATING="creating";
+    public static final String CREATED="created";
+    public static final String DELETING="deleting";
+    public static final String DELETED="deleted";
 }

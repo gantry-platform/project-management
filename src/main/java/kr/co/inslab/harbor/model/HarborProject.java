@@ -36,8 +36,7 @@ public class HarborProject   {
 
   @JsonProperty("togglable")
   private Boolean togglable = null;
-
-  @JsonProperty("current_user_role_id")
+@JsonProperty("current_user_role_id")
   private Integer currentUserRoleId = null;
 
   @JsonProperty("repo_count")

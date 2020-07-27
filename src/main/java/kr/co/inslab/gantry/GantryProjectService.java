@@ -1,5 +1,6 @@
 package kr.co.inslab.gantry;
 
+import kr.co.inslab.model.ProjectEvent;
 import kr.co.inslab.utils.CommonConstants;
 import kr.co.inslab.keycloak.KeyCloakAdminException;
 import kr.co.inslab.keycloak.AbstractKeyCloak;
@@ -37,11 +38,14 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
 
     private final HTMLTemplate htmlTemplate;
 
-    public GantryProjectService(Keycloak keycloakAdmin, RedisTemplate<String, Object> redisTemplate, MailSending mailSending, HTMLTemplate htmlTemplate) {
+    private final ProjectEventPublisher projectCreateEventPublisher;
+
+    public GantryProjectService(Keycloak keycloakAdmin, RedisTemplate<String, Object> redisTemplate, MailSending mailSending, HTMLTemplate htmlTemplate, ProjectEventPublisher projectCreateEventPublisher) {
         super(keycloakAdmin);
         this.redisTemplate = redisTemplate;
         this.mailSending = mailSending;
         this.htmlTemplate = htmlTemplate;
+        this.projectCreateEventPublisher = projectCreateEventPublisher;
     }
 
 
@@ -97,6 +101,9 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
                 throw new ProjectException((e.getMessage()),((KeyCloakAdminException) e).getHttpStatus());
             }
         }
+        //Project Create Event
+        ProjectEvent projectEvent = new ProjectEvent(CommonConstants.CREATE, projectId, name);
+        this.projectCreateEventPublisher.eventPublish(projectEvent);
 
         Project project = new Project();
         project.setName(name);
@@ -191,6 +198,10 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
     @Override
     public void deleteProjectById(String projectId) {
         this.removeGroupById(projectId);
+
+        //Project Create Event
+        ProjectEvent projectEvent = new ProjectEvent(CommonConstants.DELETE, projectId,null);
+        this.projectCreateEventPublisher.eventPublish(projectEvent);
     }
 
     @Override

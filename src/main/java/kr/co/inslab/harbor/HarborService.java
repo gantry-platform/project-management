@@ -8,6 +8,7 @@ import kr.co.inslab.model.Token;
 import kr.co.inslab.utils.CommonConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -60,7 +61,6 @@ public class HarborService implements Harbor {
 
         //get default project
         NewHarborProject newHarborProject = this.getDefaultHarborProject(projectName);
-
         //send request
         HttpEntity<NewHarborProject> httpEntity = new HttpEntity<>(newHarborProject,httpHeaders);
         ResponseEntity<Void> responseEntity = this.restTemplate.postForEntity(HARBOR_API_ENDPOINT+"/projects",httpEntity,Void.class);

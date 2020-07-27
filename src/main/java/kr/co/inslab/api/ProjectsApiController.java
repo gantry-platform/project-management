@@ -3,6 +3,8 @@ package kr.co.inslab.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.inslab.gantry.GantryProject;
 import kr.co.inslab.gantry.GantryUser;
+import kr.co.inslab.harbor.Harbor;
+import kr.co.inslab.kubernetes.Kubernetes;
 import kr.co.inslab.model.*;
 import kr.co.inslab.utils.CommonConstants;
 import org.keycloak.TokenVerifier;
@@ -35,6 +37,7 @@ public class ProjectsApiController implements ProjectsApi {
     private final GantryProject gantryProject;
 
     private final GantryUser gantryUser;
+
 
     @Value("${dashboard.url}")
     private String dashboardUrl;
@@ -69,9 +72,10 @@ public class ProjectsApiController implements ProjectsApi {
         String userId = this.getUserId(request);
         gantryUser.checkUserById(userId);
 
+        //TODO: project name check
+
         String name = body.getName();
         String description = body.getDescription();
-
         Project project = gantryProject.createProject(userId,name,description);
 
         ResponseEntity<kr.co.inslab.model.Project> res = new ResponseEntity<kr.co.inslab.model.Project>(project,HttpStatus.OK);

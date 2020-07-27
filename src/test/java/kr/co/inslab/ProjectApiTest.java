@@ -114,7 +114,7 @@ public class ProjectApiTest {
 
         NewProject newProject = new NewProject();
         newProject.setDescription("test");
-        newProject.setName("project_api_test");
+        newProject.setName("project-management-test-chan");
 
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -131,7 +131,7 @@ public class ProjectApiTest {
 
         String projectName = project.getName();
 
-        assertThat(projectName).isEqualTo("project_api_test");
+        assertThat(projectName).isEqualTo("project-management-test-chan");
 
         projectId = project.getId();
 
@@ -166,7 +166,7 @@ public class ProjectApiTest {
         Project project = objectMapper.readValue(content, Project.class);
 
         String projectName = project.getName();
-        assertThat(projectName).isEqualTo("project_api_test");
+        assertThat(projectName).isEqualTo("project-management-test-chan");
 
     }
 

@@ -41,7 +41,6 @@ public class KubernetesService implements Kubernetes{
         if(!responseEntity.getStatusCode().is2xxSuccessful()){
             throw new KubernetesException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
-
         return responseEntity;
     }
 
