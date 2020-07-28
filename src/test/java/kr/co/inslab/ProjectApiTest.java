@@ -41,14 +41,17 @@ public class ProjectApiTest {
     @Autowired
     private ProjectsApiController projectsApiController;
 
-    @Value("${keycloak.testUserName}")
+    @Value("${test.userName}")
     private String TEST_USER_NAME;
 
-    @Value("${keycloak.testUserPass}")
+    @Value("${test.userPass}")
     private String TEST_USER_PASS;
 
-    @Value("${keycloak.testUserEmail}")
+    @Value("${test.userEmail}")
     private String TEST_USER_EMAIL;
+
+    @Value("${test.projectName}")
+    private String TEST_PROJECT_NAME;
 
     public static String accessToken;
 
@@ -104,6 +107,7 @@ public class ProjectApiTest {
         accessToken = token.getAccessToken();
         DecodedJWT decodedJWT = JWT.decode(accessToken);
         userId = decodedJWT.getSubject();
+        log.debug(accessToken);
 
     }
 
@@ -114,7 +118,7 @@ public class ProjectApiTest {
 
         NewProject newProject = new NewProject();
         newProject.setDescription("test");
-        newProject.setName("project-management-test-chan");
+        newProject.setName(TEST_PROJECT_NAME);
 
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -131,7 +135,7 @@ public class ProjectApiTest {
 
         String projectName = project.getName();
 
-        assertThat(projectName).isEqualTo("project-management-test-chan");
+        assertThat(projectName).isEqualTo(TEST_PROJECT_NAME);
 
         projectId = project.getId();
 
@@ -166,7 +170,7 @@ public class ProjectApiTest {
         Project project = objectMapper.readValue(content, Project.class);
 
         String projectName = project.getName();
-        assertThat(projectName).isEqualTo("project-management-test-chan");
+        assertThat(projectName).isEqualTo(TEST_PROJECT_NAME);
 
     }
 

@@ -1,19 +1,18 @@
 package kr.co.inslab.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.Objects;
 
 /**
  * NewProject
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-06-24T14:30:11.843+09:00[Asia/Seoul]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-07-28T11:22:30.242+09:00[Asia/Seoul]")
 public class NewProject   {
   @JsonProperty("name")
   private String name = null;
@@ -29,10 +28,11 @@ public class NewProject   {
   /**
    * Get name
    * @return name
-  **/
-  @ApiModelProperty(value = "")
-  
-    public String getName() {
+   **/
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
+  @Pattern(regexp="[a-z0-9\\-]{4,40}$")   public String getName() {
     return name;
   }
 
@@ -48,10 +48,10 @@ public class NewProject   {
   /**
    * Get description
    * @return description
-  **/
+   **/
   @ApiModelProperty(value = "")
-  
-    public String getDescription() {
+
+  public String getDescription() {
     return description;
   }
 
@@ -70,7 +70,7 @@ public class NewProject   {
     }
     NewProject newProject = (NewProject) o;
     return Objects.equals(this.name, newProject.name) &&
-        Objects.equals(this.description, newProject.description);
+            Objects.equals(this.description, newProject.description);
   }
 
   @Override
@@ -82,7 +82,7 @@ public class NewProject   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NewProject {\n");
-    
+
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");

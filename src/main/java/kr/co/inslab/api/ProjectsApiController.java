@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.inslab.gantry.GantryProject;
 import kr.co.inslab.gantry.GantryUser;
 import kr.co.inslab.harbor.Harbor;
+import kr.co.inslab.harbor.model.HarborProject;
 import kr.co.inslab.kubernetes.Kubernetes;
+import kr.co.inslab.kubernetes.model.Namespace;
 import kr.co.inslab.model.*;
 import kr.co.inslab.utils.CommonConstants;
 import org.keycloak.TokenVerifier;
@@ -38,16 +40,21 @@ public class ProjectsApiController implements ProjectsApi {
 
     private final GantryUser gantryUser;
 
+    private final Harbor harbor;
+
+    private final Kubernetes kubernetes;
 
     @Value("${dashboard.url}")
     private String dashboardUrl;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public ProjectsApiController(ObjectMapper objectMapper, HttpServletRequest request, GantryProject gantryProject, GantryUser gantryUser) {
+    public ProjectsApiController(ObjectMapper objectMapper, HttpServletRequest request, GantryProject gantryProject, GantryUser gantryUser, Harbor harbor, Kubernetes kubernetes) {
         this.objectMapper = objectMapper;
         this.request = request;
         this.gantryProject = gantryProject;
         this.gantryUser = gantryUser;
+        this.harbor = harbor;
+        this.kubernetes = kubernetes;
     }
 
     //TODO: interceptor나 adviser로변경
@@ -72,11 +79,26 @@ public class ProjectsApiController implements ProjectsApi {
         String userId = this.getUserId(request);
         gantryUser.checkUserById(userId);
 
-        //TODO: project name check
-
-        String name = body.getName();
+        String proejectName = body.getName();
         String description = body.getDescription();
-        Project project = gantryProject.createProject(userId,name,description);
+
+        //check harbor projectName
+        List<HarborProject> harborProjects = this.harbor.getProjectByName(proejectName);
+        if(harborProjects != null){
+            throw new ApiException("Exists Harbor Project:"+proejectName,HttpStatus.CONFLICT);
+        }
+
+        //check kubernetes namespace
+        ResponseEntity<List<Namespace>> namespaces = this.kubernetes.getNamespaces();
+        if(namespaces.getBody() != null){
+            for(Namespace namespace : namespaces.getBody()){
+                if(namespace.getMetadata().getName().equals(proejectName)){
+                    throw new ApiException("Exists Kubernetes Namespace:"+proejectName,HttpStatus.CONFLICT);
+                }
+            }
+        }
+
+        Project project = gantryProject.createProject(userId,proejectName,description);
 
         ResponseEntity<kr.co.inslab.model.Project> res = new ResponseEntity<kr.co.inslab.model.Project>(project,HttpStatus.OK);
 

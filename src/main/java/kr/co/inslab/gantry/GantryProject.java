@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface GantryProject {
      List<Project> getProjects(String userId) throws ProjectException;
-     Project createProject(String userId, String name, String description) throws ProjectException;
+     Project createProject(String userId, String projectName, String description) throws ProjectException;
      Boolean existsUserInProject(String userId,String projectId);
      Project getProjectById(String projectId) throws ProjectException;
      void updateProjectInfo(String projectId, Map<String,String> attrs) throws ProjectException;

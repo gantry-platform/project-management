@@ -65,7 +65,7 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
     }
 
     @Override
-    public Project createProject(String userId, String name, String description) throws ProjectException {
+    public Project createProject(String userId, String projectName, String description) throws ProjectException {
         String projectId = null;
         GroupRepresentation projectGroupRep = null;
 
@@ -82,7 +82,7 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
         }
 
         try{
-            projectGroupRep = this.createGroup(name,groupAttr);
+            projectGroupRep = this.createGroup(projectName,groupAttr);
             projectId = projectGroupRep.getId();
             GroupRepresentation adminGroupRep = this.addSubGroup(projectGroupRep, adminGroupName);
             GroupRepresentation opsGroupRep = this.addSubGroup(projectGroupRep, opsGroupName);
@@ -102,11 +102,11 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             }
         }
         //Project Create Event
-        ProjectEvent projectEvent = new ProjectEvent(CommonConstants.CREATE, projectId, name);
+        ProjectEvent projectEvent = new ProjectEvent(CommonConstants.CREATE, projectId, projectName);
         this.projectCreateEventPublisher.eventPublish(projectEvent);
 
         Project project = new Project();
-        project.setName(name);
+        project.setName(projectName);
         project.setId(projectId);
 
         return project;

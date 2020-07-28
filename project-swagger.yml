@@ -602,6 +602,7 @@ components:
       properties:
         name:
           type: string
+          pattern: '[a-z0-9\-]{4,40}$'
         description:
           type: string
     UpdateProject:
@@ -739,7 +740,19 @@ components:
       properties:
         name:
           type: string
-
+    Namespace:
+      properties:
+        metadata:
+          $ref: "#/components/schemas/NamespaceMeta"
+        status:
+          type: object
+          properties:
+            phase:
+              type: string
+    NamespaceMeta:
+      properties:
+        name:
+          type: string
     GantryInfo:
       type: object
       properties:
