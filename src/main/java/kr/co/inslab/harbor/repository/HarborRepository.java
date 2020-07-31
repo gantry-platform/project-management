@@ -1,4 +1,4 @@
-package kr.co.inslab.harbor;
+package kr.co.inslab.harbor.repository;
 
 import kr.co.inslab.harbor.model.data.HarborProjectInfo;
 import org.springframework.data.mongodb.repository.MongoRepository;

@@ -41,8 +41,7 @@ public class HarborServiceTest {
     @Test
     @Order(1)
     public void createHarborProject() throws HarborException {
-        ResponseEntity<Void> responseEntity = harborProject.createProject(projectName);
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(201);
+        harborProject.createProject(projectName);
     }
 
     @Test
@@ -57,7 +56,6 @@ public class HarborServiceTest {
     @Test
     @Order(3)
     public void deleteHarborProject() throws HarborException {
-        ResponseEntity<Void> responseEntity = harborProject.deleteProject(projectId);
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        harborProject.deleteProject(projectId);
     }
 }

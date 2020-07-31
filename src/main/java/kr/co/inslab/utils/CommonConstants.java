@@ -37,4 +37,7 @@ public class CommonConstants {
     public static final String CREATED="created";
     public static final String DELETING="deleting";
     public static final String DELETED="deleted";
+    public static final String DOT_GANTRY_DOT_AI_DOT=".gantry.ai.";
+    public static final String GANTRY_DOT_AI_DOT="gantry.ai.";
+    public static final String NS = "NS";
 }

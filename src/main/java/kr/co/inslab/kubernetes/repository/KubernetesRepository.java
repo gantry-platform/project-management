@@ -1,4 +1,4 @@
-package kr.co.inslab.kubernetes;
+package kr.co.inslab.kubernetes.repository;
 
 
 import kr.co.inslab.kubernetes.model.data.KubernetesNamespaceInfo;

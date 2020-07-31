@@ -2,10 +2,9 @@ package kr.co.inslab.kubernetes;
 
 import kr.co.inslab.gantry.ProjectEvent;
 import kr.co.inslab.gantry.data.GantryInfo;
-import kr.co.inslab.harbor.HarborException;
-import kr.co.inslab.harbor.model.data.HarborProjectInfo;
 import kr.co.inslab.kubernetes.model.data.KubernetesNamespaceInfo;
 import kr.co.inslab.kubernetes.model.data.KubernetesNamespaceInfoKubernetes;
+import kr.co.inslab.kubernetes.repository.KubernetesRepository;
 import kr.co.inslab.utils.CommonConstants;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;

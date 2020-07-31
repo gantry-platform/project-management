@@ -48,7 +48,7 @@ public class HarborService implements Harbor {
     }
 
     @Override
-    public ResponseEntity<Void> createProject(String projectName) throws HarborException {
+    public void createProject(String projectName) throws HarborException {
 
         //get idToken
         String idToken = this.getIdToken();
@@ -67,7 +67,6 @@ public class HarborService implements Harbor {
         if(!responseEntity.getStatusCode().is2xxSuccessful()){
             throw new HarborException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
-        return responseEntity;
     }
 
     @Override
@@ -93,7 +92,7 @@ public class HarborService implements Harbor {
     }
 
     @Override
-    public ResponseEntity<Void> deleteProject(int projectId) throws HarborException {
+    public void deleteProject(int projectId) throws HarborException {
         String idToken = this.getIdToken();
         //set header
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -105,7 +104,6 @@ public class HarborService implements Harbor {
         if(!responseEntity.getStatusCode().is2xxSuccessful()){
             throw new HarborException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
-        return responseEntity;
     }
 
     private NewHarborProject getDefaultHarborProject(String projectName){

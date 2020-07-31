@@ -5,6 +5,7 @@ import kr.co.inslab.gantry.data.GantryInfo;
 import kr.co.inslab.harbor.model.HarborProject;
 import kr.co.inslab.harbor.model.data.HarborProjectInfo;
 import kr.co.inslab.harbor.model.data.HarborProjectInfoHarbor;
+import kr.co.inslab.harbor.repository.HarborRepository;
 import kr.co.inslab.utils.CommonConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

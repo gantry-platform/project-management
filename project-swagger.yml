@@ -740,19 +740,7 @@ components:
       properties:
         name:
           type: string
-    Namespace:
-      properties:
-        metadata:
-          $ref: "#/components/schemas/NamespaceMeta"
-        status:
-          type: object
-          properties:
-            phase:
-              type: string
-    NamespaceMeta:
-      properties:
-        name:
-          type: string
+
     GantryInfo:
       type: object
       properties:
@@ -801,3 +789,56 @@ components:
             deleted_at:
               type: string
               format: date
+    Record:
+      type: object
+      properties:
+        alias:
+          type: string
+        name:
+          type: string
+        ttl:
+          type: integer
+          format: int64
+        type:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date
+        deleted_at:
+          type: string
+          format: date
+      title: Record
+    Zone:
+      type: object
+      properties:
+        name:
+          type: string
+        zoneId:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date
+        deleted_at:
+          type: string
+          format: date
+      title: Zone
+    Route53Info:
+      type: object
+      properties:
+        id:
+          type: string
+        gantry:
+          $ref: "#/components/schemas/GantryInfo"
+        zone:
+          $ref: "#/components/schemas/Zone"
+        record:
+          $ref: "#/components/schemas/Record"
+
