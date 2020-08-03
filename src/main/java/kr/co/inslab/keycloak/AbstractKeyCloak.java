@@ -36,8 +36,9 @@ public abstract class AbstractKeyCloak {
         this.keycloakAdmin = keycloakAdmin;
     }
 
+    //like 검색됨.
     protected List<UserRepresentation> getUserByEmail(String email){
-        return this.getRealm().users().search(null,null,null,email,0,10);
+        return this.getRealm().users().search(null,null,null,email,0,0);
     }
 
     protected UserResource getUserResourceById(String userId) {

@@ -8,6 +8,9 @@ import kr.co.inslab.harbor.model.HarborProject;
 import kr.co.inslab.kubernetes.Kubernetes;
 import kr.co.inslab.kubernetes.model.Namespace;
 import kr.co.inslab.model.*;
+import kr.co.inslab.route53.Route53;
+import kr.co.inslab.route53.Route53Exception;
+import kr.co.inslab.route53.model.Zone;
 import kr.co.inslab.utils.CommonConstants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.representations.AccessToken;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +34,7 @@ import java.util.Map;
 @Controller
 public class ProjectsApiController implements ProjectsApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectsApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProjectsApiController.class);
 
     private final ObjectMapper objectMapper;
 
@@ -44,17 +48,20 @@ public class ProjectsApiController implements ProjectsApi {
 
     private final Kubernetes kubernetes;
 
+    private final Route53 route53;
+
     @Value("${dashboard.url}")
     private String dashboardUrl;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public ProjectsApiController(ObjectMapper objectMapper, HttpServletRequest request, GantryProject gantryProject, GantryUser gantryUser, Harbor harbor, Kubernetes kubernetes) {
+    public ProjectsApiController(ObjectMapper objectMapper, HttpServletRequest request, GantryProject gantryProject, GantryUser gantryUser, Harbor harbor, Kubernetes kubernetes, Route53 route53) {
         this.objectMapper = objectMapper;
         this.request = request;
         this.gantryProject = gantryProject;
         this.gantryUser = gantryUser;
         this.harbor = harbor;
         this.kubernetes = kubernetes;
+        this.route53 = route53;
     }
 
     //TODO: interceptor나 adviser로변경
@@ -89,13 +96,23 @@ public class ProjectsApiController implements ProjectsApi {
         }
 
         //check kubernetes namespace
-        ResponseEntity<List<Namespace>> namespaces = this.kubernetes.getNamespaces();
-        if(namespaces.getBody() != null){
-            for(Namespace namespace : namespaces.getBody()){
+      List<Namespace> namespaces = this.kubernetes.getNamespaces();
+        if(namespaces != null){
+            for(Namespace namespace : namespaces){
                 if(namespace.getMetadata().getName().equals(proejectName)){
                     throw new ApiException("Exists Kubernetes Namespace:"+proejectName,HttpStatus.CONFLICT);
                 }
             }
+        }
+
+        //check Route53 zone
+        try {
+            Zone zone = this.route53.getZones(proejectName+CommonConstants.DOT_GANTRY_DOT_AI_DOT);
+            if(zone != null){
+                throw new ApiException("Exists Zone Name:"+proejectName,HttpStatus.CONFLICT);
+            }
+        } catch (HttpClientErrorException.NotFound ex){
+            log.info("Not Found Zone Name");
         }
 
         Project project = gantryProject.createProject(userId,proejectName,description);
@@ -112,7 +129,7 @@ public class ProjectsApiController implements ProjectsApi {
         try{
             success = gantryProject.joinNewProjectAndGroupForExistsUser(token, email);
         }catch (Exception ex){
-            logger.error(ex.toString());
+            log.error(ex.toString());
             success = false;
         }
 
@@ -313,7 +330,7 @@ public class ProjectsApiController implements ProjectsApi {
             String[] splitToken = token.split(" ");
             AccessToken accessToken = TokenVerifier.create(splitToken[1], AccessToken.class).getToken();
             userId = accessToken.getSubject();
-            logger.debug("subject:"+userId);
+            log.debug("subject:"+userId);
         }
         if(userId==null){
             throw new ApiException("Invaild userId", HttpStatus.BAD_REQUEST);

@@ -215,12 +215,22 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
 
     @Override
     public void deleteMemberInPending(String projectId,String email) throws ProjectException {
+        UserRepresentation searchUserRepresentation = null;
         List<UserRepresentation> userRepresentations = this.getUserByEmail(email);
+        if(userRepresentations != null && userRepresentations.size() > 0){
+            for(UserRepresentation userRepresentation : userRepresentations){
+                if(userRepresentation.getEmail().equals(email)){
+                    searchUserRepresentation = userRepresentation;
+                    break;
+                }
+            }
+        }
+
         //Not Found User
-        if(userRepresentations.size()==0){
+        if(searchUserRepresentation == null){
             throw new ProjectException("["+email+"]"+"Not Found User", HttpStatus.NOT_FOUND);
+        }else{
             //Exists User
-        }else if(userRepresentations.size()==1){
             GroupRepresentation groupRepresentation = this.getGroupById(projectId);
             this.removePendingUser(groupRepresentation,email);
             try{
@@ -229,16 +239,10 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
                 ex.printStackTrace();
                 log.warn("Redis Key 삭제 중 Error");
             }
-            if(!(userRepresentations.get(0).isEmailVerified())){
-                this.removeUser(userRepresentations.get(0).getId());
+            if(!(searchUserRepresentation.isEmailVerified())){
+                this.removeUser(searchUserRepresentation.getId());
             }
             //Multiple Users
-        }else{
-            for(UserRepresentation userRepresentation: userRepresentations){
-                log.debug(userRepresentation.getEmail());
-            }
-            log.error("Multiple Users Exception");
-            throw new ProjectException("Multiple Users Exception",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -250,10 +254,19 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
 
     @Override
     public void inviteUserToGroup(String email,String projectId,String groupId) throws ProjectException {
+        UserRepresentation searchUserRepresentation = null;
+        //like search
         List<UserRepresentation> userRepresentations = this.getUserByEmail(email);
-        //New User
-        if((userRepresentations == null) || (userRepresentations.size() == 0)){
-            //TODO: 생성 error 처리 추가해야 함
+        if(userRepresentations != null && userRepresentations.size() > 0){
+            for(UserRepresentation userRepresentation : userRepresentations){
+                if(userRepresentation.getEmail().equals(email)){
+                    searchUserRepresentation = userRepresentation;
+                    break;
+                }
+            }
+        }
+        // New User
+        if(searchUserRepresentation == null){
             String userId = null;
             GroupRepresentation topGroup = this.getGroupById(projectId);
             GroupRepresentation subGroup = this.getGroupById(groupId);
@@ -264,12 +277,11 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             this.joinGroup(userId,topGroup.getId());
             this.joinGroup(userId,subGroup.getId());
             userResource.sendVerifyEmail();
-            //Exists User
-        }else if(userRepresentations.size()==1){
+        }else{
             //Make Join Info
             GroupRepresentation topGroup = this.getGroupById(projectId);
             String token = SimpleToken.generateNewToken();
-            Map<String,String> joinInfo = this.makeJoinInfo(projectId,groupId,userRepresentations.get(0).getId(),token);
+            Map<String,String> joinInfo = this.makeJoinInfo(projectId,groupId,searchUserRepresentation.getId(),token);
 
             //Save to redis
             ValueOperations<String,Object> valueOperations = redisTemplate.opsForValue();
@@ -280,13 +292,6 @@ public class GantryProjectService extends AbstractKeyCloak implements GantryProj
             String inviteHtml = htmlTemplate.makeInviteHtml(CommonConstants.INVITE,token,email);
             mailSending.sendHtmlEmail(CommonConstants.NO_REPLY_GANTRY_AI,email, CommonConstants.GANTRY+ " Project 초대 메일",inviteHtml);
             this.addPendingUser(topGroup,email);
-            //Multiple Users
-        }else{
-            for(UserRepresentation userRepresentation: userRepresentations){
-                log.debug(userRepresentation.getEmail());
-            }
-            log.error("Multiple Users Exception");
-            throw new ProjectException("Multiple Users Exception",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

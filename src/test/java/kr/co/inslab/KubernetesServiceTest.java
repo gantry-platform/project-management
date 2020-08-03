@@ -36,15 +36,12 @@ public class KubernetesServiceTest {
     @Test
     @Order(1)
     public void createNamespace() throws KubernetesException {
-        ResponseEntity<Void> responseEntity = kubernetes.createNamespace("1234");
-        assertThat( responseEntity.getStatusCode().value()).isEqualTo(201);
+        kubernetes.createNamespace("1234");
     }
 
     @Test
     @Order(2)
     public void delete() throws KubernetesException {
-        ResponseEntity<Void> responseEntity = kubernetes.deleteNamespace("1234");
-        assertThat( responseEntity.getStatusCode().value()).isEqualTo(200);
+        kubernetes.deleteNamespace("1234");
     }
-
 }

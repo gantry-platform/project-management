@@ -10,12 +10,14 @@ import kr.co.inslab.utils.CommonConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.threeten.bp.LocalDateTime;
 
 import java.util.List;
 
 @Component
+@Async
 public class HarborProjectEventListener implements ApplicationListener<ProjectEvent> {
 
     private final Logger log = LoggerFactory.getLogger(HarborProjectEventListener.class);

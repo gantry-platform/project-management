@@ -26,7 +26,7 @@ public class KubernetesService implements Kubernetes{
     }
 
     @Override
-    public ResponseEntity<Void> createNamespace(String name) throws KubernetesException {
+    public void createNamespace(String name) throws KubernetesException {
         //set header
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -43,22 +43,21 @@ public class KubernetesService implements Kubernetes{
         if(!responseEntity.getStatusCode().is2xxSuccessful()){
             throw new KubernetesException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
-        return responseEntity;
     }
 
     @Override
-    public ResponseEntity<Void>  deleteNamespace(String name) throws KubernetesException {
+    public void deleteNamespace(String name) throws KubernetesException {
         ResponseEntity<Void> responseEntity =
                 this.restTemplate.exchange(K8S_API_ENDPOINT+"/namespaces/{name}", HttpMethod.DELETE,null,Void.class,name);
         if(!responseEntity.getStatusCode().is2xxSuccessful()){
             throw new KubernetesException(responseEntity.getStatusCode().getReasonPhrase(),responseEntity.getStatusCode());
         }
-
-        return responseEntity;
     }
 
     @Override
-    public ResponseEntity<List<Namespace>> getNamespaces() throws KubernetesException {
-        return this.restTemplate.exchange(K8S_API_ENDPOINT+"/namespaces", HttpMethod.GET,null,new ParameterizedTypeReference<List<Namespace>>(){});
+    public List<Namespace> getNamespaces() throws KubernetesException {
+        ResponseEntity<List<Namespace>> responseEntity =
+                this.restTemplate.exchange(K8S_API_ENDPOINT+"/namespaces", HttpMethod.GET,null,new ParameterizedTypeReference<List<Namespace>>(){});
+        return responseEntity.getBody();
     }
 }
