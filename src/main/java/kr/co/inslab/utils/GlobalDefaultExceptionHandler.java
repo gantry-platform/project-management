@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletResponse;
@@ -83,9 +84,22 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
         int statusCode = ((WebApplicationException) ex).getResponse().getStatus();
         String message = ((WebApplicationException) ex).getResponse().getStatusInfo().getReasonPhrase();
         HttpStatus status = HttpStatus.resolve(statusCode);
-        err.setCode(status.toString());
+        err.setCode(String.valueOf(statusCode));
         err.setMessage(message);
         return new ResponseEntity<>(err,status);
+    }
+
+    @ExceptionHandler(org.springframework.web.client.HttpClientErrorException.class)
+    public ResponseEntity<Error> httpClientErrorException(Exception ex,HttpServletResponse response) throws Exception{
+        ex.printStackTrace();
+        Error err = new Error();
+        int statusCode = ((HttpClientErrorException) ex).getRawStatusCode();
+        String message = ((HttpClientErrorException) ex).getMessage();
+        HttpStatus status = HttpStatus.resolve(statusCode);
+        err.setCode(String.valueOf(statusCode));
+        err.setMessage(message);
+        return new ResponseEntity<>(err,status);
+
     }
 
     //임시코드
